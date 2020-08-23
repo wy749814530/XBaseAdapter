@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+
 import androidx.core.view.MotionEventCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +46,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     protected Context mContext;
     protected int mLayoutResId;
     protected LayoutInflater mLayoutInflater;
-    protected List<T> mData;
+    protected List<T> mData = new ArrayList<>();
 
     private int mLastPosition = -1;
     private int mViewType = -1;
@@ -94,7 +96,9 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
 
     public BaseRecyclerAdapter(Context context, List<T> data, int layoutResId) {
         this.mContext = context;
-        this.mData = data == null ? new ArrayList<T>() : data;
+        if (data != null) {
+            this.mData.addAll(data);
+        }
         if (layoutResId != 0) {
             this.mLayoutResId = layoutResId;
         }
@@ -490,27 +494,23 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     }
 
     /**
-     * @param datas
-     */
-    public void addAll(List<T> datas) {
-        if (datas != null) {
-            mData.addAll(datas);
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
      * @param item
      */
     public void add(T item) {
-        add(mData.size(), item);
+        if (item != null) {
+            mData.add(item);
+            notifyDataSetChanged();
+        }
     }
 
     /**
      * @param data
      */
     public void setData(List<T> data) {
-        this.mData = data;
+        this.mData.clear();
+        if (data != null) {
+            this.mData.addAll(data);
+        }
         if (mRequestLoadMoreListener != null) {
             mNextLoadingEnable = true;
             mFooterView = null;
@@ -520,26 +520,29 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     }
 
     /**
+     * @param datas
+     */
+    public void addData(List<T> datas) {
+        if (datas != null) {
+            mData.addAll(datas);
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * @return
+     */
+    public List<T> getData() {
+        return mData;
+    }
+
+    /**
      * @param itemHeight
      */
     public void setItemHeight(int itemHeight) {
         this.mItemHeight = itemHeight;
     }
 
-    /**
-     * @param data
-     */
-    public void addData(List<T> data) {
-        this.mData.addAll(data);
-        notifyDataSetChanged();
-    }
-
-    /**
-     * @return
-     */
-    public List getData() {
-        return mData;
-    }
 
     /**
      * @param duration
